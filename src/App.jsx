@@ -49,28 +49,37 @@ const FadeIn = ({ children, delay = 0, direction = "up" }) => {
 };
 
 export default function App() {
-  const [isRsvpOpen, setIsRsvpOpen] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-
   // Google Calendar Link Generator
   const addToCalendar = () => {
+    // 4:00 PM IST is 10:30 AM UTC
+    // 6:00 PM IST is 12:30 PM UTC
     const event = {
       text: "First Holy Communion Celebration: Anaia Mary Joy",
-      dates: "20251227T160000/20251227T183000",
+      dates: "20251227T103000Z/20251227T123000Z", // The 'Z' locks it to Universal Time
       details: "Join us for the First Holy Communion Celebration of Anaia Mary Joy.",
       location: "St. Joseph's Metropolitan Cathedral, Palayam, Thiruvananthapuram",
     };
-    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.text)}&dates=${event.dates}&details=${encodeURIComponent(event.details)}&location=${encodeURIComponent(event.location)}`;
+    // Added &ctz=Asia/Kolkata to explicitly tell Google the context
+    const url = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.text)}&dates=${event.dates}&details=${encodeURIComponent(event.details)}&location=${encodeURIComponent(event.location)}&ctz=Asia/Kolkata`;
     window.open(url, '_blank');
+  };
+
+  // Google Form Link
+  const openRSVP = () => {
+    window.open("https://forms.gle/1ruUs55zG4qye2Zw7", "_blank");
   };
 
   return (
     <div className="bg-[#FDFBF7] text-[#1B365D] overflow-x-hidden selection:bg-[#1B365D] selection:text-[#D4AF37]">
       {/* Global Styles for Fonts */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Lato:wght@300;400;700&display=swap');
         
-        /* Updated: Using Playfair Display for everything for consistency */
+        /* Enforce Light Mode Scheme for scrollbars and browser UI */
+        :root {
+          color-scheme: light; 
+        }
+
         body { font-family: 'Playfair Display', serif; }
         h1, h2, h3, .serif-font { font-family: 'Playfair Display', serif; }
         
@@ -117,7 +126,7 @@ export default function App() {
                <div className="absolute inset-0 border-2 border-[#D4AF37] rounded-full transform rotate-3"></div>
                <div className="absolute inset-0 border-2 border-[#1B365D] rounded-full transform -rotate-3"></div>
                
-               {/* Image - Reverted to object-cover for circle */}
+               {/* Image with object-cover */}
                <img 
                  src="lllll.png" 
                  onError={(e) => {e.target.onerror = null; e.target.src="https://images.unsplash.com/photo-1544427920-24e832256f72?auto=format&fit=crop&q=80&w=600"}}
@@ -239,11 +248,11 @@ export default function App() {
             </div>
             
             <blockquote className="text-3xl md:text-5xl font-serif italic leading-relaxed text-[#1B365D]">
-              "I am the bread of life. Whoever comes to me will never go hungry, and whoever believes in me will never be thirsty."
+              "Then He took a piece of bread, gave thanks to God, broke it, and gave it to them saying, 'This is my body, which is given for you. Do this in memory of me.'"
             </blockquote>
             <div className="flex items-center justify-center gap-4">
                <div className="w-12 h-px bg-[#D4AF37]"></div>
-               <p className="text-lg uppercase tracking-widest text-[#D4AF37]">John 6:35</p>
+               <p className="text-lg uppercase tracking-widest text-[#D4AF37]">John 22:19</p>
                <div className="w-12 h-px bg-[#D4AF37]"></div>
             </div>
           </div>
@@ -277,7 +286,7 @@ export default function App() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setIsRsvpOpen(true)}
+                onClick={openRSVP}
                 className="w-full bg-[#1B365D] p-6 shadow-xl flex items-center justify-center gap-4 text-white hover:bg-[#2C5282] transition-all"
               >
                 <div className="text-[#D4AF37]">
@@ -293,65 +302,9 @@ export default function App() {
       {/* FOOTER */}
       <footer className="bg-[#0F1F3D] text-white py-16 text-center border-t border-[#1B365D]">
         <p className="font-serif text-3xl mb-4 italic text-[#D4AF37]">With Love</p>
-        <p className="text-xs opacity-60 uppercase tracking-[0.3em]">The Family</p>
+        <p className="text-xs opacity-60 uppercase tracking-[0.3em] mb-4">Adin, Athul, Anan, Celine and Antony Joy</p>
+        <p className="text-[10px] opacity-30 uppercase tracking-widest">&copy; 2025. Anan Joy Antony. All Rights Reserved.</p>
       </footer>
-
-      {/* RSVP MODAL */}
-      <AnimatePresence>
-        {isRsvpOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-[#0F1F3D]/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-            onClick={() => setIsRsvpOpen(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-[#FDFBF7] p-8 md:p-12 max-w-md w-full shadow-2xl relative gold-border"
-              onClick={e => e.stopPropagation()}
-            >
-              
-              {!submitted ? (
-                <>
-                  <h3 className="text-3xl font-serif text-[#1B365D] mb-8 text-center">RSVP</h3>
-                  <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); setSubmitted(true); }}>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-widest text-[#708090] mb-2">Your Name</label>
-                      <input required type="text" className="w-full px-4 py-3 bg-white border border-[#E2E8F0] focus:border-[#D4AF37] outline-none transition-all" placeholder="Guest Name" />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-widest text-[#708090] mb-2">Number of Guests</label>
-                      <select className="w-full px-4 py-3 bg-white border border-[#E2E8F0] focus:border-[#D4AF37] outline-none">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4+</option>
-                      </select>
-                    </div>
-                    <div className="pt-4">
-                      <button type="submit" className="w-full bg-[#1B365D] text-white py-4 font-bold uppercase tracking-widest hover:bg-[#2C5282] transition-colors border border-[#1B365D]">
-                        Confirm Attendance
-                      </button>
-                    </div>
-                  </form>
-                </>
-              ) : (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-[#1B365D] rounded-full flex items-center justify-center mx-auto mb-6 text-[#D4AF37]">
-                    <Check size={32} />
-                  </div>
-                  <h3 className="text-2xl font-serif text-[#1B365D] mb-2">Thank You!</h3>
-                  <p className="text-[#708090]">We look forward to celebrating with you.</p>
-                  <button onClick={() => setIsRsvpOpen(false)} className="mt-8 text-xs font-bold uppercase tracking-widest text-[#1B365D] hover:text-[#D4AF37] underline decoration-[#D4AF37]">Close</button>
-                </div>
-              )}
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
